@@ -24,7 +24,7 @@ async function loadB24UserFromHeader(req) {
 
   let auth;
   try { auth = JSON.parse(raw); } catch { return null; }
-  if (!auth?.access_token || !auth?.domain) return null;
+  if (!auth || !auth.access_token || !auth.domain) return null;
 
   const url = `https://${auth.domain}/rest/user.current?auth=${auth.access_token}`;
   const r = await fetch(url);
@@ -130,3 +130,4 @@ app.get('/api/detalhes', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`API rodando em http://localhost:${PORT}`));
+
