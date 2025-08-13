@@ -1,4 +1,7 @@
-version: "3.9"
+
+networks:
+  tabela-precos-net:
+    external: true
 
 services:
   api:
@@ -10,8 +13,8 @@ services:
     command: node server.js
     ports:
       - "3001:3001"
-    volumes:
-      - ./api:/app/api
+    networks:
+      - tabela-precos-net
     restart: unless-stopped
 
   frontend:
@@ -22,7 +25,7 @@ services:
     working_dir: /app/tela-valores
     command: npm run dev -- --host
     ports:
-      - "5173:5173"
-    volumes:
-      - ./tela-valores:/app/tela-valores
+      - "5173:5173" 
+    networks:
+      - tabela-precos-net
     restart: unless-stopped
