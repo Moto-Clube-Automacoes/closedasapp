@@ -1,13 +1,76 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
+
+    <!-- Ocupa a tela toda (inclui notch no iOS) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>MG | Tabela de Preços</title>
+    <meta name="description" content="Tabela de preços de motocicletas: Tabela Moto, Tabela MG e simulação de parcelas.">
+
+    <!-- Favicons (coloque os arquivos em /public) -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/MC-LOGO-16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/MC-LOGO-32.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tabela Preços Valores</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/MC-LOGO-180.png">
+
+    <!-- (opcional) Manifest PWA -->
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- Se servir a app na raiz, mantenha. Em subpasta, ajuste/remova. -->
+    <base href="/">
+
+    <!-- CSS mínimo para ocupar 100% e evitar barras brancas -->
+    <style>
+      html, body, #root { height: 100%; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #464646;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+      /* Safe areas (iOS notch) */
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+      }
+    </style>
+
+    <!-- API Bitrix (opcional: só terá efeito dentro do Bitrix) -->
+    <script src="https://api.bitrix24.com/api/v1/"></script>
+    <script>
+      // Inicializa BX24 se estiver dentro do Bitrix; fora dele, não faz nada.
+      (function initBx(){
+        if (window.BX24 && typeof BX24.init === 'function') {
+          BX24.init(function () {
+            console.log('BX24 pronto.');
+            // Mantém o iframe ajustado à altura do conteúdo
+            function fit() {
+              const h = Math.max(
+                document.documentElement.scrollHeight,
+                document.body ? document.body.scrollHeight : 0
+              );
+              try { BX24.resizeWindow(document.documentElement.clientWidth, h); } catch(_) {}
+            }
+            window.addEventListener('load', fit);
+            window.addEventListener('resize', fit);
+            // Ajusta após navegação SPA também:
+            window.addEventListener('hashchange', fit);
+            // Pequeno timer para garantir resize após mounts do React
+            setTimeout(fit, 300);
+          });
+        }
+      })();
+    </script>
   </head>
   <body>
+    <noscript>Este app precisa de JavaScript habilitado para funcionar.</noscript>
     <div id="root"></div>
+    <!-- Entrada do Vite/React -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
