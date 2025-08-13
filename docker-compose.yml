@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    working_dir: /app/api
+    command: npm start
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./api:/app/api
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    working_dir: /app/tela-valores
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./tela-valores:/app/tela-valores
+    restart: unless-stopped
