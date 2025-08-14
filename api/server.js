@@ -1,25 +1,22 @@
+// /api/server.js
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import {
   fetchProdutos,
   fetchDetalhes,
   calcularParcelas
 } from './services/parcelas.js';
 
-// Config para __dirname em ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ---------- SERVIR FRONTEND ----------
-app.use(express.static(path.join(__dirname, 'public'))); // pasta do build do frontend
+// Rota raiz para testar o servidor
+app.get('/', (req, res) => {
+  res.send('API funcionando!');
+});
 
-// Rotas da API
+// GET /api/precos?tipo=moto|mg
 app.get('/api/precos', async (req, res) => {
   try {
     const tipo = req.query.tipo === 'mg' ? 'mg' : 'moto';
@@ -31,6 +28,7 @@ app.get('/api/precos', async (req, res) => {
   }
 });
 
+// GET /api/detalhes?produto=...&tipo=moto|mg
 app.get('/api/detalhes', async (req, res) => {
   try {
     const produto = req.query.produto;
@@ -47,6 +45,7 @@ app.get('/api/detalhes', async (req, res) => {
   }
 });
 
+// GET /api/parcelas?valor=...&R=...
 app.get('/api/parcelas', async (req, res) => {
   try {
     const valor = parseFloat(req.query.valor);
@@ -64,12 +63,7 @@ app.get('/api/parcelas', async (req, res) => {
   }
 });
 
-// Rota coringa: serve index.html do frontend para qualquer outra URL
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`API + Frontend rodando em http://localhost:${PORT}`);
+  console.log(`API rodando em http://localhost:${PORT}`);
 });
