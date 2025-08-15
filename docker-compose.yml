@@ -1,8 +1,3 @@
-version: "3.7"
-
-networks:
-  network_public:
-    external: true
 
 services:
   api:
@@ -13,7 +8,8 @@ services:
     working_dir: /app/api
     command: node server.js
     networks:
-      - network_public
+      - tabela-precos-net
+      - traefik-net
     labels:
       - traefik.enable=1
       - traefik.http.routers.closedasapp_api.rule=Host(`closedasapp.motoclubehonda.com.br`) && PathPrefix(`/api`)
@@ -31,7 +27,8 @@ services:
     working_dir: /app/tela-valores
     command: npm run dev -- --host
     networks:
-      - network_public
+      - tabela-precos-net
+      - traefik-net
     labels:
       - traefik.enable=1
       - traefik.http.routers.closedasapp_frontend.rule=Host(`closedasapp.motoclubehonda.com.br`) && PathPrefix(`/`) 
