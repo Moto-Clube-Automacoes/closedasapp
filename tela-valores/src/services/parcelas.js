@@ -1,7 +1,7 @@
 // tela-valores/src/services/parcelas.js
 
 // Se existir VITE_API_BASE, usa ela; senão cai para '/api' (proxy do Vite no dev)
-const API_BASE = 'http://95.217.191.179:3001/api';
+const API_BASE = 'http://37.27.202.41:3001/api';
 
 function handleHttp(res) {
   if (!res.ok) {
@@ -31,4 +31,5 @@ export async function calcularParcelas(valor, R) {
   const res = await fetch(`${API_BASE}/parcelas?valor=${valor}&R=${R}`);
   return handleHttp(res);
 }
+
 
