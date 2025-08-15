@@ -1,36 +1,10 @@
-version: "3.9"
+version: "3.7"
 
 networks:
-  tabela-precos-net:
+  network_public:
     external: true
-  traefik-net:
-    external: false
 
 services:
-  traefik:
-    image: traefik:v2.10
-    container_name: traefik
-    command:
-      - "--api.insecure=true"                       # Painel do Traefik (HTTP)
-      - "--providers.docker=true"                   # Habilita integração com Docker
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=seu-email@dominio.com"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "7080:80"
-      - "7443:443"
-      - "8580:8080"   # Dashboard Traefik
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
-    networks:
-      - traefik-net
-      - tabela-precos-net
-    restart: unless-stopped
-
   api:
     build:
       context: .
@@ -39,14 +13,14 @@ services:
     working_dir: /app/api
     command: node server.js
     networks:
-      - tabela-precos-net
-      - traefik-net
+      - network_public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`closedasapp.motoclubehonda.com.br`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.api.loadbalancer.server.port=3001"
+      - traefik.enable=1
+      - traefik.http.routers.closedasapp_api.rule=Host(`closedasapp.motoclubehonda.com.br`) && PathPrefix(`/api`)
+      - traefik.http.routers.closedasapp_api.entrypoints=websecure
+      - traefik.http.routers.closedasapp_api.tls.certresolver=letsencryptresolver
+      - traefik.http.services.closedasapp_api.loadbalancer.server.port=3001
+      - traefik.http.services.closedasapp_api.loadbalancer.passHostHeader=true
     restart: unless-stopped
 
   frontend:
@@ -57,12 +31,12 @@ services:
     working_dir: /app/tela-valores
     command: npm run dev -- --host
     networks:
-      - tabela-precos-net
-      - traefik-net
+      - network_public
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`closedasapp.motoclubehonda.com.br`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+      - traefik.enable=1
+      - traefik.http.routers.closedasapp_frontend.rule=Host(`closedasapp.motoclubehonda.com.br`) && PathPrefix(`/`) 
+      - traefik.http.routers.closedasapp_frontend.entrypoints=websecure
+      - traefik.http.routers.closedasapp_frontend.tls.certresolver=letsencryptresolver
+      - traefik.http.services.closedasapp_frontend.loadbalancer.server.port=5173
+      - traefik.http.services.closedasapp_frontend.loadbalancer.passHostHeader=true
     restart: unless-stopped
